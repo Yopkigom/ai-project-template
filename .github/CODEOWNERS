@@ -1,0 +1,9 @@
+# CODEOWNERS — 경로별 기본 리뷰어 자동 배정.
+# 작성 후 scripts/setup-github.sh 의 require_code_owner_reviews 를 true 로 바꾸면
+# 해당 경로 변경 PR은 코드오너 승인 없이는 머지되지 않습니다.
+# 문법: <경로 패턴> <@계정 또는 @org/팀> (아래는 예시 — 팀에 맞게 수정하세요)
+#
+# * @your-github-id
+# /src/api/        @api-owner
+# /src/app_core/   @core-owner
+# /.github/        @infra-owner
