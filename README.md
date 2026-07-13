@@ -27,6 +27,8 @@ pip install pre-commit && pre-commit install && pre-commit install --hook-type p
 gh auth login
 bash scripts/setup-github.sh <owner>/<repo>          # 팀 프로젝트
 bash scripts/setup-github.sh <owner>/<repo> --solo   # 1인 프로젝트 (PR 승인 요구 제외)
+#   무료 플랜의 private 리포는 브랜치 보호만 건너뜁니다(자동 감지) —
+#   전체 제약 매트릭스는 docs/TEMPLATE_GUIDE.md §6 참고
 ```
 
 전체 절차·주의사항·운용 방법: **[docs/TEMPLATE_GUIDE.md](docs/TEMPLATE_GUIDE.md)**

@@ -62,4 +62,13 @@
   전환하려면 번역 필요.
 - **GitHub 템플릿 방식** (vs cookiecutter/copier): 웹 UI 원클릭 생성과 낮은 진입
   장벽을 얻는 대신 변수 치환·업데이트 전파를 포기 — 치환은 init 스크립트로,
-  전파는 수동 역반영(TEMPLATE_GUIDE §6)으로 보완.
+  전파는 수동 역반영(TEMPLATE_GUIDE §7)으로 보완.
+
+## 4. 개정 이력
+
+- **2026-07-13 — 무료 플랜 private 리포 대응**: 무료 private에서 브랜치 보호 API가
+  403을 반환하는데, `setup-github.sh`가 `set -e`로 전체 중단되어 정작 지원되는
+  설정(머지 전략·라벨)까지 미적용되던 문제를 "경고 후 계속"으로 완화.
+  ci.yml에 `concurrency`(중복 실행 취소) 추가 — private 무료 Actions 분한도
+  (월 2,000분) 절약. CODEOWNERS·CI 배지·Secret scanning의 플랜 제약을 문서화
+  (TEMPLATE_GUIDE §6, GitHub Docs 플랜 기능표 기준).
