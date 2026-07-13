@@ -5,7 +5,10 @@
 # 사전조건: gh auth login (해당 레포 admin 권한)
 # 사용법:   bash scripts/setup-github.sh <owner>/<repo> [--solo]
 #           --solo : 1인 프로젝트용 — PR 승인 요구를 끕니다 (승인자 없이는 머지 불가 방지)
-# 주의:     브랜치 보호 API는 private 레포에서 유료 플랜이 필요할 수 있습니다.
+# 주의:     무료 플랜의 private 리포는 브랜치 보호를 지원하지 않습니다(403).
+#           이 경우 보호 단계만 건너뛰고 머지 전략·라벨은 계속 적용합니다.
+#           GitHub Pro(개인)/Team(조직) 또는 public 전환 시 전부 사용 가능 —
+#           docs/TEMPLATE_GUIDE.md §6 참고.
 set -euo pipefail
 
 REPO="${1:?사용법: bash scripts/setup-github.sh <owner>/<repo> [--solo]}"
@@ -24,9 +27,10 @@ else
 fi
 
 echo "==> main 브랜치 보호 규칙 적용"
-gh api -X PUT "repos/$REPO/branches/main/protection" \
+PROTECTION_OK=true
+if ! gh api -X PUT "repos/$REPO/branches/main/protection" \
   -H "Accept: application/vnd.github+json" \
-  --input - <<JSON
+  --input - > /dev/null <<JSON
 {
   "required_status_checks": {
     "strict": true,
@@ -40,6 +44,12 @@ gh api -X PUT "repos/$REPO/branches/main/protection" \
   "required_linear_history": true
 }
 JSON
+then
+  PROTECTION_OK=false
+  echo "⚠️  브랜치 보호 적용 실패 — 위 오류가 HTTP 403이면 무료 플랜 private 리포 제약입니다."
+  echo "    그동안은 로컬 방어선(pre-commit + pre-push pytest)이 품질 게이트를 대신합니다."
+  echo "    나머지 설정(머지 전략·라벨)은 계속 적용합니다."
+fi
 
 echo "==> Merge 전략: Squash 전용 + 머지 후 브랜치 자동 삭제"
 gh repo edit "$REPO" \
@@ -51,7 +61,13 @@ gh repo edit "$REPO" \
 echo "==> 라벨 적용"
 bash "$SCRIPT_DIR/apply-labels.sh" "$REPO"
 
-echo "완료. 남은 수동 설정(자세한 내용은 docs/TEMPLATE_GUIDE.md):"
-echo "  1) Settings > Code security: Secret scanning / Push protection 활성화"
+if [[ "$PROTECTION_OK" == true ]]; then
+  echo "완료: 브랜치 보호 + 머지 전략 + 라벨 적용됨."
+else
+  echo "완료(부분): 머지 전략 + 라벨만 적용됨 — 브랜치 보호는 미적용."
+  echo "  (GitHub Pro 전환 또는 public 전환 후 이 스크립트를 다시 실행하면 적용됩니다.)"
+fi
+echo "남은 수동 설정(자세한 내용은 docs/TEMPLATE_GUIDE.md):"
+echo "  1) Settings > Code security: Secret scanning / Push protection 활성화 (⚠️ public 전용)"
 echo "  2) Settings > General > Features: Discussions 활성화"
 echo "  3) Discussions > 카테고리 'CollaborationLog' 생성 (API 미지원, 수동 필수)"

@@ -1,6 +1,9 @@
 # my-ai-project
 
 [![src CI (lint + test)](https://github.com/{{GITHUB_OWNER}}/{{GITHUB_REPO}}/actions/workflows/ci.yml/badge.svg)](https://github.com/{{GITHUB_OWNER}}/{{GITHUB_REPO}}/actions/workflows/ci.yml)
+<!-- ⚠️ private 리포에서는 워크플로 배지가 외부 임베드 불가라 렌더되지 않습니다 —
+     위 배지 줄을 삭제하거나 public 전환 시 사용하세요 (docs/TEMPLATE_GUIDE.md §6). -->
+
 
 > TODO: 프로젝트 한 줄 소개를 작성하세요.
 
